@@ -18,6 +18,7 @@ namespace Chess
 		Soldier currentSoldier;
 		Spot markedSpot;
 
+		bool showAll = false;
 
 		public Chess()
 		{
@@ -65,6 +66,8 @@ namespace Chess
 			if(hasChoice)
 				markedSpot = (markedSpot == null) ? chooseAbles[0] : markedSpot;
 
+
+
 			switch (key)
 			{
 				case ConsoleKey.RightArrow:
@@ -72,6 +75,13 @@ namespace Chess
 					{
 						if (choiceIndex + 1 == chooseAbles.Count) choiceIndex = 0;
 						else choiceIndex++;
+						if (showAll)
+						{
+							for (int i = 0; i < chooseAbles.Count; i++)
+							{
+								chooseAbles[i].Paint(ConsoleColor.Yellow);
+							}
+						}
 						MarkSpot(chooseAbles[choiceIndex]);
 					}
 					else Console.SetCursorPosition(0, 0);
@@ -81,6 +91,13 @@ namespace Chess
 					{
 						if (choiceIndex - 1 < 0) choiceIndex = chooseAbles.Count - 1;
 						else choiceIndex--;
+						if (showAll)
+						{
+							for (int i = 0; i < chooseAbles.Count; i++)
+							{
+								chooseAbles[i].Paint(ConsoleColor.Yellow);
+							}
+						}
 						MarkSpot(chooseAbles[choiceIndex]);
 					}
 					else Console.SetCursorPosition(0, 0);
@@ -96,6 +113,9 @@ namespace Chess
 				case ConsoleKey.Escape:
 					if (currentState == State.choosingAct) currentState = State.choosingPlayer;
 					else Console.SetCursorPosition(0, 0);
+					break;
+				case ConsoleKey.P:
+					showAll = !showAll;
 					break;
 				default:
 					Console.SetCursorPosition(0, 0);

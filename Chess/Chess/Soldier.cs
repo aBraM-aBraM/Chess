@@ -28,6 +28,7 @@ namespace Chess
 			List<Spot> spots = new List<Spot>();
 			var diagonalSpots = DiagonalSpots(map, currentSpot);
 			var crossSpots = CrossSpots(map, currentSpot);
+
 			switch (role)
 			{
 				case Role.king:
@@ -155,7 +156,7 @@ namespace Chess
 					if (!dirOccupied[0])
 					{
 						list.Add(map[s.index.x + i, s.index.y + i]);
-						if (map[s.index.x, s.index.y].IsOccupied())
+						if (map[s.index.x + i, s.index.y + i].IsOccupied())
 						{
 							dirOccupied[0] = true;
 						}
@@ -163,7 +164,7 @@ namespace Chess
 					if (!dirOccupied[1])
 					{
 						list.Add(map[s.index.x - i, s.index.y + i]);
-						if (map[s.index.x, s.index.y].IsOccupied())
+						if (map[s.index.x - i, s.index.y + i].IsOccupied())
 						{
 							dirOccupied[1] = true;
 						}
@@ -171,7 +172,7 @@ namespace Chess
 					if (!dirOccupied[2])
 					{
 						list.Add(map[s.index.x - i, s.index.y - i]);
-						if (map[s.index.x, s.index.y].IsOccupied())
+						if (map[s.index.x - i, s.index.y - i].IsOccupied())
 						{
 							dirOccupied[2] = true;
 						}
@@ -179,7 +180,7 @@ namespace Chess
 					if (!dirOccupied[3])
 					{
 						list.Add(map[s.index.x + i, s.index.y - i]);
-						if (map[s.index.x, s.index.y].IsOccupied())
+						if (map[s.index.x + i, s.index.y - i].IsOccupied()) 
 						{
 							dirOccupied[4] = true;
 						}
@@ -203,7 +204,7 @@ namespace Chess
 					if (!dirOccupied[0])
 					{
 						list.Add(map[s.index.x + i, s.index.y]);
-						if (map[s.index.x, s.index.y].IsOccupied())
+						if (map[s.index.x + i, s.index.y].IsOccupied())
 						{
 							dirOccupied[0] = true;
 						}
@@ -211,7 +212,7 @@ namespace Chess
 					if (!dirOccupied[1])
 					{
 						list.Add(map[s.index.x - i, s.index.y]);
-						if (map[s.index.x, s.index.y].IsOccupied())
+						if (map[s.index.x - i, s.index.y].IsOccupied())
 						{
 							dirOccupied[1] = true;
 						}
@@ -219,7 +220,7 @@ namespace Chess
 					if (!dirOccupied[2])
 					{
 						list.Add(map[s.index.x, s.index.y - i]);
-						if (map[s.index.x, s.index.y].IsOccupied())
+						if (map[s.index.x, s.index.y - i].IsOccupied())
 						{
 							dirOccupied[2] = true;
 						}
@@ -227,7 +228,7 @@ namespace Chess
 					if (!dirOccupied[3])
 					{
 						list.Add(map[s.index.x, s.index.y + i]);
-						if (map[s.index.x, s.index.y].IsOccupied())
+						if (map[s.index.x, s.index.y + i].IsOccupied())
 						{
 							dirOccupied[4] = true;
 						}
