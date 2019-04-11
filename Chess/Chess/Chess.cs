@@ -36,6 +36,13 @@ namespace Chess
 			}
 			teams[0] = new Team(true, map);
 			teams[1] = new Team(false, map);
+			for (int i = 0; i < map.GetLength(0); i++)
+			{
+				for (int j = 0; j < map.GetLength(1); j++)
+				{
+					map[i, j].PrintRole();
+				}
+			}
 		}
 
 		public void Play()
@@ -67,6 +74,7 @@ namespace Chess
 						else choiceIndex++;
 						MarkSpot(chooseAbles[choiceIndex]);
 					}
+					else Console.SetCursorPosition(0, 0);
 					break;
 				case ConsoleKey.LeftArrow:
 					if (hasChoice && chooseAbles.Count > 1)
@@ -75,6 +83,7 @@ namespace Chess
 						else choiceIndex--;
 						MarkSpot(chooseAbles[choiceIndex]);
 					}
+					else Console.SetCursorPosition(0, 0);
 					break;
 				case ConsoleKey.Enter:
 					if (markedSpot.occupier == null) Console.WriteLine("no occupier");
@@ -86,6 +95,7 @@ namespace Chess
 					break;
 				case ConsoleKey.Escape:
 					if (currentState == State.choosingAct) currentState = State.choosingPlayer;
+					else Console.SetCursorPosition(0, 0);
 					break;
 				default:
 					Console.SetCursorPosition(0, 0);
@@ -99,14 +109,14 @@ namespace Chess
 		{
 			if(markedSpot != null)
 			{
-				markedSpot.Print(markedSpot.color);
+				markedSpot.Paint(markedSpot.color);
 				markedSpot = s;
-				markedSpot.Print(ConsoleColor.Green);
+				markedSpot.Paint(ConsoleColor.Green,true);
 			}
 		}
 		private void UnMark()
 		{
-			markedSpot.Print(markedSpot.color);
+			markedSpot.Paint(markedSpot.color);
 			markedSpot = null;
 		}
 		private void ConsolePrint(string text)

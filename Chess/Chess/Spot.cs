@@ -21,9 +21,9 @@ namespace Chess
 			this.index = index;
 			this.position = position;
 			this.color = color;
-			Print(color);
+			Paint(color);
 		}
-		public void Print(ConsoleColor color)
+		public void Paint(ConsoleColor color,bool marked = false)
 		{
 			for (int x = 0; x < radius; x+=radius/2)
 			{
@@ -40,6 +40,39 @@ namespace Chess
 					{
 					}
 				}
+			}
+			if (occupier != null) PrintRole(marked);
+		}
+		public void PrintRole(bool marked = false)
+		{
+			if (occupier == null) return;
+			Console.SetCursorPosition(position.x + 1, position.y + 1);
+			if (!marked)
+				Console.BackgroundColor = color;
+			else
+				Console.BackgroundColor = ConsoleColor.Green;
+			if (occupier.white) Console.ForegroundColor = ConsoleColor.White;
+			else Console.ForegroundColor = ConsoleColor.Black;
+			switch (occupier.role)
+			{
+				case Soldier.Role.bishop:
+					Console.WriteLine("@");
+					break;
+				case Soldier.Role.king:
+					Console.WriteLine("†");
+					break;
+				case Soldier.Role.knight:
+					Console.WriteLine("~");
+					break;
+				case Soldier.Role.pawn:
+					Console.WriteLine("¡");
+					break;
+				case Soldier.Role.queen:
+					Console.WriteLine("X");
+					break;
+				case Soldier.Role.rook:
+					Console.WriteLine("^");
+					break;
 			}
 		}
 	}
