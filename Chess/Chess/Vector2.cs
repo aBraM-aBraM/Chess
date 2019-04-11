@@ -35,5 +35,6 @@ namespace Chess
 		{
 			return "(" + x + "," + y + ")";
 		}
+		public float Distance(Vector2 other) => (float)Math.Sqrt(Math.Pow(x - other.x, 2) + Math.Pow(y - other.y,2));
 	}
 }

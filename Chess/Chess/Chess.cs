@@ -18,7 +18,8 @@ namespace Chess
 		Soldier currentSoldier;
 		Spot markedSpot;
 
-		bool showAll = false;
+		bool showAll;
+
 
 		public Chess()
 		{
@@ -62,7 +63,7 @@ namespace Chess
 			List<Spot> chooseAbles;
 			if (currentState == State.choosingPlayer) chooseAbles = (whiteTurn) ? chooseAbles = teams[0].AvailablePlayers() : chooseAbles = teams[1].AvailablePlayers();
 			else chooseAbles = currentSoldier.AvailableSpots();
-			bool hasChoice = (chooseAbles.Count <= 1) ? false : true;
+			bool hasChoice = (chooseAbles.Count == 0) ? false : true;
 			if(hasChoice)
 				markedSpot = (markedSpot == null) ? chooseAbles[0] : markedSpot;
 
@@ -71,58 +72,75 @@ namespace Chess
 			switch (key)
 			{
 				case ConsoleKey.RightArrow:
-					if (hasChoice && chooseAbles.Count > 1)
+					if (hasChoice)
 					{
 						if (choiceIndex + 1 == chooseAbles.Count) choiceIndex = 0;
 						else choiceIndex++;
-						if (showAll)
-						{
-							for (int i = 0; i < chooseAbles.Count; i++)
-							{
-								chooseAbles[i].Paint(ConsoleColor.Yellow);
-							}
-						}
-						MarkSpot(chooseAbles[choiceIndex]);
+						MarkSpot(MoveCursor(key, chooseAbles));
+						//MarkSpot(chooseAbles[choiceIndex]);
 					}
 					else Console.SetCursorPosition(0, 0);
 					break;
 				case ConsoleKey.LeftArrow:
-					if (hasChoice && chooseAbles.Count > 1)
+					if (hasChoice)
 					{
 						if (choiceIndex - 1 < 0) choiceIndex = chooseAbles.Count - 1;
 						else choiceIndex--;
-						if (showAll)
-						{
-							for (int i = 0; i < chooseAbles.Count; i++)
-							{
-								chooseAbles[i].Paint(ConsoleColor.Yellow);
-							}
-						}
-						MarkSpot(chooseAbles[choiceIndex]);
+						MarkSpot(MoveCursor(key, chooseAbles));
+						//MarkSpot(chooseAbles[choiceIndex]);
 					}
 					else Console.SetCursorPosition(0, 0);
 					break;
+				case ConsoleKey.UpArrow:
+					if (hasChoice)
+						MarkSpot(MoveCursor(key, chooseAbles));
+					break;
+				case ConsoleKey.DownArrow:
+					if (hasChoice)
+						MarkSpot(MoveCursor(key, chooseAbles));
+					break;
 				case ConsoleKey.Enter:
-					if (markedSpot.occupier == null) Console.WriteLine("no occupier");
-					currentSoldier = markedSpot.occupier;
-					ConsolePrint(currentSoldier.role.ToString());
-					currentState = State.choosingAct;
-					UnMark();
+					if (markedSpot == null) { }
+					else if (currentState == State.choosingPlayer)
+					{
+						if (markedSpot.occupier == null) Console.WriteLine("no occupier");
+						currentSoldier = markedSpot.occupier;
+						currentState = State.choosingAct;
+						UnMark();
+					}
+					else if (currentState == State.choosingAct)
+					{
+						if (map[markedSpot.index.x, markedSpot.index.y].IsOccupied())
+							map[markedSpot.index.x, markedSpot.index.y].occupier.alive = false;
+
+						map[currentSoldier.currentSpot.index.x, currentSoldier.currentSpot.index.y].occupier = null;
+						map[currentSoldier.currentSpot.index.x, currentSoldier.currentSpot.index.y].ClearRole();
+						map[markedSpot.index.x, markedSpot.index.y].occupier = currentSoldier;
+
+						currentSoldier.currentSpot = map[markedSpot.index.x, markedSpot.index.y];
+						currentSoldier = null;
+
+						currentState = State.choosingPlayer;
+						whiteTurn = !whiteTurn;
+						UnMark();
+					}
 					choiceIndex = 0;
 					break;
 				case ConsoleKey.Escape:
 					if (currentState == State.choosingAct) currentState = State.choosingPlayer;
 					else Console.SetCursorPosition(0, 0);
 					break;
-				case ConsoleKey.P:
+				case ConsoleKey.F3:
 					showAll = !showAll;
+					if (showAll) ShowSpots(chooseAbles);
+					else HideSpots(chooseAbles);
 					break;
 				default:
 					Console.SetCursorPosition(0, 0);
 					break;
 			}
-			if(markedSpot != null)
-				ConsolePrint(markedSpot.index + ":" + ((markedSpot.IsOccupied()) ? "occupied" : "not occupied"));
+			
+
 		}
 
 		private void MarkSpot(Spot s)
@@ -133,18 +151,97 @@ namespace Chess
 				markedSpot = s;
 				markedSpot.Paint(ConsoleColor.Green,true);
 			}
+			else
+			{
+				markedSpot = s;
+				markedSpot.Paint(ConsoleColor.Green, true);
+			}
 		}
 		private void UnMark()
 		{
 			markedSpot.Paint(markedSpot.color);
 			markedSpot = null;
 		}
-		private void ConsolePrint(string text)
+		private void ShowSpots(List<Spot> spots)
 		{
-			Console.SetCursorPosition(0, 0);
-			Console.WriteLine("             ");
-			Console.SetCursorPosition(0, 0);
-			Console.WriteLine(text);
+			for (int i = 0; i < spots.Count; i++)
+			{
+				spots[i].Paint(ConsoleColor.Yellow);
+			}
+		}
+		private void HideSpots(List<Spot> spots)
+		{
+			for (int i = 0; i < spots.Count; i++)
+			{
+				spots[i].Paint(spots[i].color);
+			}
+		}
+		private Spot MoveCursor(ConsoleKey key,List<Spot> spots)
+		{
+			float distance = float.PositiveInfinity;
+			List<Spot> wanted = new List<Spot>();
+			Spot bestSpot = markedSpot;
+			switch (key)
+			{
+				case ConsoleKey.RightArrow:
+					for (int i = 0; i < spots.Count; i++)
+					{
+						if (spots[i].index.x > markedSpot.index.x) wanted.Add(spots[i]);
+					}
+					for (int i = 0; i < wanted.Count; i++)
+					{
+						if (markedSpot.position.Distance(wanted[i].position) < distance)
+						{
+							distance = markedSpot.position.Distance(wanted[i].position);
+							bestSpot = wanted[i];
+						}
+					}
+					return bestSpot;
+				case ConsoleKey.LeftArrow:
+					for (int i = 0; i < spots.Count; i++)
+					{
+						if (spots[i].index.x < markedSpot.index.x) wanted.Add(spots[i]);
+					}
+					for (int i = 0; i < wanted.Count; i++)
+					{
+						if (markedSpot.position.Distance(wanted[i].position) < distance)
+						{
+							distance = markedSpot.position.Distance(wanted[i].position);
+							bestSpot = wanted[i];
+						}
+					}
+					return bestSpot;
+				case ConsoleKey.UpArrow:
+					for (int i = 0; i < spots.Count; i++)
+					{
+						if (spots[i].index.y < markedSpot.index.y) wanted.Add(spots[i]);
+					}
+					for (int i = 0; i < wanted.Count; i++)
+					{
+						if (markedSpot.position.Distance(wanted[i].position) < distance)
+						{
+							distance = markedSpot.position.Distance(wanted[i].position);
+							bestSpot = wanted[i];
+						}
+					}
+					return bestSpot;
+				case ConsoleKey.DownArrow:
+					for (int i = 0; i < spots.Count; i++)
+					{
+						if (spots[i].index.y > markedSpot.index.y) wanted.Add(spots[i]);
+					}
+					for (int i = 0; i < wanted.Count; i++)
+					{
+						if (markedSpot.position.Distance(wanted[i].position) < distance)
+						{
+							distance = markedSpot.position.Distance(wanted[i].position);
+							bestSpot = wanted[i];
+						}
+					}
+					return bestSpot;
+			
+			}
+			return bestSpot;
 		}
 
 		class Team

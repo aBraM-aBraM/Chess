@@ -32,11 +32,11 @@ namespace Chess
 			switch (role)
 			{
 				case Role.king:
-					if (currentSpot.index.x < map.GetLength(0) && !IsFriendly(map[currentSpot.index.x + 1, currentSpot.index.y]))
+					if (currentSpot.index.x < map.GetLength(0) - 1 && !IsFriendly(map[currentSpot.index.x + 1, currentSpot.index.y]))
 						spots.Add(map[currentSpot.index.x + 1, currentSpot.index.y]);
 					if (currentSpot.index.x > 0 && !IsFriendly(map[currentSpot.index.x - 1, currentSpot.index.y]))
 						spots.Add(map[currentSpot.index.x - 1, currentSpot.index.y]);
-					if (currentSpot.index.y < map.GetLength(1) && !IsFriendly(map[currentSpot.index.x, currentSpot.index.y + 1]))
+					if (currentSpot.index.y < map.GetLength(1) - 1 && !IsFriendly(map[currentSpot.index.x, currentSpot.index.y + 1]))
 						spots.Add(map[currentSpot.index.x, currentSpot.index.y + 1]);
 					if (currentSpot.index.y > 0 && !IsFriendly(map[currentSpot.index.x, currentSpot.index.y - 1]))
 						spots.Add(map[currentSpot.index.x, currentSpot.index.y - 1]);
@@ -64,68 +64,72 @@ namespace Chess
 					}
 					break;
 				case Role.pawn:
-					if (currentSpot.index.y > 0)
+					if (white)
 					{
-						if (white)
+						if (currentSpot.index.x < map.GetLength(0) - 1
+							&& map[currentSpot.index.x + 1, currentSpot.index.y + 1].IsOccupied() &&
+								!IsFriendly(map[currentSpot.index.x + 1, currentSpot.index.y + 1]) )
+									spots.Add(map[currentSpot.index.x + 1, currentSpot.index.y + 1]);
+
+						if (currentSpot.index.x > 0
+							&& map[currentSpot.index.x - 1, currentSpot.index.y + 1].IsOccupied() &&
+								!IsFriendly(map[currentSpot.index.x - 1, currentSpot.index.y + 1]) )
+									spots.Add(map[currentSpot.index.x - 1, currentSpot.index.y + 1]);
+
+						if (!IsFriendly(map[currentSpot.index.x, currentSpot.index.y + 1]))
+						spots.Add(map[currentSpot.index.x, currentSpot.index.y + 1]);
+					}
+					else
 						{
-							if (currentSpot.index.x < map.GetLength(0)
-								&& !IsFriendly(map[currentSpot.index.x + 1, currentSpot.index.y + 1])) spots.Add(map[currentSpot.index.x + 1, currentSpot.index.y + 1]);
-							if (currentSpot.index.x > 0
-								&& !IsFriendly(map[currentSpot.index.x - 1, currentSpot.index.y + 1])) spots.Add(map[currentSpot.index.x - 1, currentSpot.index.y + 1]);
-							if (!IsFriendly(map[currentSpot.index.x, currentSpot.index.y + 1])) spots.Add(map[currentSpot.index.x, currentSpot.index.y + 1]);
-						}
-						else
-						{
-							if (currentSpot.index.x < map.GetLength(0)
+							if (currentSpot.index.x < map.GetLength(0) - 1
 								&& map[currentSpot.index.x + 1, currentSpot.index.y - 1].IsOccupied()
 								&& !IsFriendly(map[currentSpot.index.x + 1, currentSpot.index.y - 1])) spots.Add(map[currentSpot.index.x + 1, currentSpot.index.y - 1]);
 							if (currentSpot.index.x > 0
 								&& map[currentSpot.index.x - 1, currentSpot.index.y - 1].IsOccupied() && !IsFriendly(map[currentSpot.index.x - 1, currentSpot.index.y - 1])) spots.Add(map[currentSpot.index.x - 1, currentSpot.index.y - 1]);
 							if (!IsFriendly(map[currentSpot.index.x, currentSpot.index.y - 1])) spots.Add(map[currentSpot.index.x, currentSpot.index.y - 1]);
 						}
-					}
 					break;
 				case Role.knight:
 					if (currentSpot.index.x + 1 < map.GetLength(0))
 					{
-						if (currentSpot.index.y - 2 >= 0)
+						if (currentSpot.index.y - 2 >= 0 && !IsFriendly(map[currentSpot.index.x + 1, currentSpot.index.y - 2]))
 						{
 							spots.Add(map[currentSpot.index.x + 1, currentSpot.index.y - 2]);
 						}
-						if (currentSpot.index.x + 2 <= map.GetLength(1))
+						if (currentSpot.index.y + 2 < map.GetLength(1) && !IsFriendly(map[currentSpot.index.x + 1, currentSpot.index.y + 2]))
 						{
 							spots.Add(map[currentSpot.index.x + 1, currentSpot.index.y + 2]);
 						}
 					}
 					if (currentSpot.index.x - 1 >= 0)
 					{
-						if (currentSpot.index.y - 2 >= 0)
+						if (currentSpot.index.y - 2 >= 0 && !IsFriendly(map[currentSpot.index.x - 1, currentSpot.index.y - 2]))
 						{
 							spots.Add(map[currentSpot.index.x - 1, currentSpot.index.y - 2]);
 						}
-						if (currentSpot.index.x + 2 <= map.GetLength(1))
+						if (currentSpot.index.y + 2 < map.GetLength(1) && !IsFriendly(map[currentSpot.index.x - 1, currentSpot.index.y + 2]))
 						{
 							spots.Add(map[currentSpot.index.x - 1, currentSpot.index.y + 2]);
 						}
 					}
 					if (currentSpot.index.x + 2 < map.GetLength(0))
 					{
-						if (currentSpot.index.y - 1 >= 0)
+						if (currentSpot.index.y - 1 >= 0 && !IsFriendly(map[currentSpot.index.x + 2, currentSpot.index.y - 1]))
 						{
 							spots.Add(map[currentSpot.index.x + 2, currentSpot.index.y - 1]);
 						}
-						if (currentSpot.index.x + 1 <= map.GetLength(1))
+						if (currentSpot.index.y + 1 < map.GetLength(1) - 1 && !IsFriendly(map[currentSpot.index.x + 2, currentSpot.index.y + 1]))
 						{
 							spots.Add(map[currentSpot.index.x + 2, currentSpot.index.y + 1]);
 						}
 					}
 					if (currentSpot.index.x - 2 >= 0)
 					{
-						if (currentSpot.index.y - 1 >= 0)
+						if (currentSpot.index.y - 1 >= 0 && !IsFriendly(map[currentSpot.index.x - 2, currentSpot.index.y - 1]))
 						{
 							spots.Add(map[currentSpot.index.x - 2, currentSpot.index.y - 1]);
 						}
-						if (currentSpot.index.x + 1 <= map.GetLength(1))
+						if (currentSpot.index.y < map.GetLength(1) - 1 && !IsFriendly(map[currentSpot.index.x - 2, currentSpot.index.y + 1]))
 						{
 							spots.Add(map[currentSpot.index.x - 2, currentSpot.index.y + 1]);
 						}
@@ -143,19 +147,20 @@ namespace Chess
 			{
 				return spot.occupier.white == white;
 			}
-			return true;
+			return false;
 		}
 		private List<Spot> DiagonalSpots(Spot[,] map,Spot s)
 		{
 			List<Spot> list = new List<Spot>();
 			bool[] dirOccupied = new bool[4];
-			for (int i = 0; i < 7; i++)
+			for (int i = 1; i < 8; i++)
 			{
 				try
 				{
 					if (!dirOccupied[0])
 					{
-						list.Add(map[s.index.x + i, s.index.y + i]);
+						if (!IsFriendly(map[s.index.x + i, s.index.y + i]))
+							list.Add(map[s.index.x + i, s.index.y + i]);
 						if (map[s.index.x + i, s.index.y + i].IsOccupied())
 						{
 							dirOccupied[0] = true;
@@ -163,7 +168,8 @@ namespace Chess
 					}
 					if (!dirOccupied[1])
 					{
-						list.Add(map[s.index.x - i, s.index.y + i]);
+						if (!IsFriendly(map[s.index.x - i, s.index.y + i]))
+							list.Add(map[s.index.x - i, s.index.y + i]);
 						if (map[s.index.x - i, s.index.y + i].IsOccupied())
 						{
 							dirOccupied[1] = true;
@@ -171,7 +177,8 @@ namespace Chess
 					}
 					if (!dirOccupied[2])
 					{
-						list.Add(map[s.index.x - i, s.index.y - i]);
+						if (!IsFriendly(map[s.index.x - i, s.index.y - i]))
+							list.Add(map[s.index.x - i, s.index.y - i]);
 						if (map[s.index.x - i, s.index.y - i].IsOccupied())
 						{
 							dirOccupied[2] = true;
@@ -179,7 +186,8 @@ namespace Chess
 					}
 					if (!dirOccupied[3])
 					{
-						list.Add(map[s.index.x + i, s.index.y - i]);
+						if (!IsFriendly(map[s.index.x + i, s.index.y - i]))
+							list.Add(map[s.index.x + i, s.index.y - i]);
 						if (map[s.index.x + i, s.index.y - i].IsOccupied()) 
 						{
 							dirOccupied[4] = true;
@@ -197,47 +205,60 @@ namespace Chess
 		{
 			List<Spot> list = new List<Spot>();
 			bool[] dirOccupied = new bool[4];
-			for (int i = 0; i < 7; i++)
+			for (int i = 1; i < 8; i++)
 			{
 				try
 				{
 					if (!dirOccupied[0])
 					{
-						list.Add(map[s.index.x + i, s.index.y]);
+						if (!IsFriendly(map[s.index.x + i, s.index.y]))
+							list.Add(map[s.index.x + i, s.index.y]);
 						if (map[s.index.x + i, s.index.y].IsOccupied())
 						{
 							dirOccupied[0] = true;
 						}
 					}
+				}
+				catch {}
+				try
+				{
 					if (!dirOccupied[1])
 					{
-						list.Add(map[s.index.x - i, s.index.y]);
+						if (!IsFriendly(map[s.index.x - i, s.index.y]))
+							list.Add(map[s.index.x - i, s.index.y]);
 						if (map[s.index.x - i, s.index.y].IsOccupied())
 						{
 							dirOccupied[1] = true;
 						}
 					}
+				}
+				catch {}
+				try
+				{
 					if (!dirOccupied[2])
 					{
-						list.Add(map[s.index.x, s.index.y - i]);
+						if (!IsFriendly(map[s.index.x, s.index.y - i]))
+							list.Add(map[s.index.x, s.index.y - i]);
 						if (map[s.index.x, s.index.y - i].IsOccupied())
 						{
 							dirOccupied[2] = true;
 						}
 					}
+				}
+				catch {}
+				try
+				{
 					if (!dirOccupied[3])
 					{
-						list.Add(map[s.index.x, s.index.y + i]);
+						if (!IsFriendly(map[s.index.x, s.index.y + i]))
+							list.Add(map[s.index.x, s.index.y + i]);
 						if (map[s.index.x, s.index.y + i].IsOccupied())
 						{
-							dirOccupied[4] = true;
+							dirOccupied[3] = true;
 						}
 					}
 				}
-				catch
-				{
-
-				}
+				catch {}
 			}
 			return list;
 		}

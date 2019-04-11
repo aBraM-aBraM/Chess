@@ -75,5 +75,11 @@ namespace Chess
 					break;
 			}
 		}
+		public void ClearRole()
+		{
+			Console.SetCursorPosition(position.x + 1, position.y + 1);
+			Console.BackgroundColor = color;
+			Console.WriteLine(" ");
+		}
 	}
 }
