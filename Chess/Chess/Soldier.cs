@@ -23,7 +23,7 @@ namespace Chess
 			this.map = map;
 		}
 
-		public List<Spot> AvailableSpots()
+		public List<Spot> AvailableSpots(Chess chess)
 		{
 			List<Spot> spots = new List<Spot>();
 			var diagonalSpots = DiagonalSpots(map, currentSpot);
@@ -32,14 +32,10 @@ namespace Chess
 			switch (role)
 			{
 				case Role.king:
-					if (currentSpot.index.x < map.GetLength(0) - 1 && !IsFriendly(map[currentSpot.index.x + 1, currentSpot.index.y]))
-						spots.Add(map[currentSpot.index.x + 1, currentSpot.index.y]);
-					if (currentSpot.index.x > 0 && !IsFriendly(map[currentSpot.index.x - 1, currentSpot.index.y]))
-						spots.Add(map[currentSpot.index.x - 1, currentSpot.index.y]);
-					if (currentSpot.index.y < map.GetLength(1) - 1 && !IsFriendly(map[currentSpot.index.x, currentSpot.index.y + 1]))
-						spots.Add(map[currentSpot.index.x, currentSpot.index.y + 1]);
-					if (currentSpot.index.y > 0 && !IsFriendly(map[currentSpot.index.x, currentSpot.index.y - 1]))
-						spots.Add(map[currentSpot.index.x, currentSpot.index.y - 1]);
+					for (int i = 0; i < KingSpots(map, currentSpot, chess).Count; i++)
+					{
+						spots.Add(KingSpots(map, currentSpot, chess)[i]);
+					}
 					break;
 				case Role.queen:					
 					for (int i = 0; i < diagonalSpots.Count; i++)
@@ -286,6 +282,108 @@ namespace Chess
 			}
 			return list;
 		}
+		private List<Spot> KingSpots(Spot[,] map,Spot currentSpot,Chess c)
+		{
+			List<Spot> spots = new List<Spot>();
+			if (currentSpot.index.x < map.GetLength(0) - 1 && !IsFriendly(map[currentSpot.index.x + 1, currentSpot.index.y]))
+				spots.Add(map[currentSpot.index.x + 1, currentSpot.index.y]);
+			if (currentSpot.index.x > 0 && !IsFriendly(map[currentSpot.index.x - 1, currentSpot.index.y]))
+				spots.Add(map[currentSpot.index.x - 1, currentSpot.index.y]);
+			if (currentSpot.index.y < map.GetLength(1) - 1 && !IsFriendly(map[currentSpot.index.x, currentSpot.index.y + 1]))
+				spots.Add(map[currentSpot.index.x, currentSpot.index.y + 1]);
+			if (currentSpot.index.y > 0 && !IsFriendly(map[currentSpot.index.x, currentSpot.index.y - 1]))
+				spots.Add(map[currentSpot.index.x, currentSpot.index.y - 1]);
+
+			if (currentSpot.index.x < map.GetLength(0) - 1 && currentSpot.index.y < map.GetLength(1) - 1 &&
+				!IsFriendly(map[currentSpot.index.x + 1, currentSpot.index.y + 1]))
+				spots.Add(map[currentSpot.index.x + 1, currentSpot.index.y + 1]);
+			if (currentSpot.index.x > 0 && currentSpot.index.y < map.GetLength(1) - 1 &&
+				!IsFriendly(map[currentSpot.index.x - 1, currentSpot.index.y + 1]))
+				spots.Add(map[currentSpot.index.x - 1, currentSpot.index.y + 1]);
+			if (currentSpot.index.x < map.GetLength(0) - 1 && currentSpot.index.y > 0 &&
+				!IsFriendly(map[currentSpot.index.x + 1, currentSpot.index.y - 1]))
+				spots.Add(map[currentSpot.index.x + 1, currentSpot.index.y - 1]);
+			if (currentSpot.index.x > 0 && currentSpot.index.y > 0 &&
+				!IsFriendly(map[currentSpot.index.x - 1, currentSpot.index.y - 1]))
+				spots.Add(map[currentSpot.index.x - 1, currentSpot.index.y - 1]);
+
+			if (white)
+			{
+				if (currentSpot.index.x == 3 && currentSpot.index.y == 0
+					&& map[map.GetLength(0) - 1, 0].occupier.role == Role.rook
+					&& IsFriendly(map[map.GetLength(0) - 1, 0]))
+				{
+					if (!map[map.GetLength(0) - 1, 0].occupier.IsThreatened(c)
+						&& !IsThreatened(c))
+					{
+						spots.Add(map[map.GetLength(0) - 2, 0]);
+					}
+				}
+				if (currentSpot.index.x == 3 && currentSpot.index.y == 0
+					&& map[0, 0].occupier.role == Role.rook
+					&& IsFriendly(map[0, 0]))
+				{
+					if (!map[0, 0].occupier.IsThreatened(c)
+						&& !IsThreatened(c))
+					{
+						spots.Add(map[1, 0]);
+					}
+				}
+			}
+			else
+			{
+				if (currentSpot.index.x == 4 && currentSpot.index.y == map.GetLength(1) - 1
+					&& map[map.GetLength(0) - 1, map.GetLength(1) - 1].occupier.role == Role.rook
+					&& IsFriendly(map[map.GetLength(0) - 1, map.GetLength(1) - 1]))
+				{
+					if (!map[map.GetLength(0) - 1, map.GetLength(1) - 1].occupier.IsThreatened(c)
+						   && !IsThreatened(c))
+					{
+						spots.Add(map[map.GetLength(0) - 2, map.GetLength(1) - 1]);
+					}
+
+				}
+				if (currentSpot.index.x == 4 && currentSpot.index.y == map.GetLength(1) - 1
+					&& map[0, map.GetLength(1) - 1].occupier.role == Role.rook
+					&& IsFriendly(map[0, map.GetLength(1) - 1]))
+				{
+					if (!map[0, map.GetLength(1) - 1].occupier.IsThreatened(c)
+						   && !IsThreatened(c))
+					{
+						spots.Add(map[1, map.GetLength(1) - 1]);
+					}
+
+				}
+			}
+
+			return spots;
+
+		}
+		private bool IsThreatened(Chess c)
+		{
+			if (white)
+			{
+				for (int i = 0; i < c.teams[1].SoldiersList().Count; i++)
+				{
+					for (int j = 0; j < c.teams[1].SoldiersList()[i].AvailableSpots(c).Count; j++)
+					{
+						if (currentSpot.index == c.teams[1].SoldiersList()[i].AvailableSpots(c)[j].index) return true;
+					}
+				}
+			}
+			if (!white)
+			{
+				for (int i = 0; i < c.teams[0].SoldiersList().Count; i++)
+				{
+					for (int j = 0; j < c.teams[0].SoldiersList()[i].AvailableSpots(c).Count; j++)
+					{
+						if (currentSpot.index == c.teams[0].SoldiersList()[i].AvailableSpots(c)[j].index) return true;
+					}
+				}
+			}
+			return false;
+		}
+
 		public void Die() => alive = false;
 	}
 }

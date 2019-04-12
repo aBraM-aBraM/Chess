@@ -31,6 +31,16 @@ namespace Chess
 		{
 			return new Vector2(vector.x * scalar, vector.y * scalar);
 		}
+		public static bool operator ==(Vector2 first, Vector2 second)
+		{
+			if (first.x == second.x && first.y == second.y) return true;
+			return false;
+		}
+		public static bool operator !=(Vector2 first, Vector2 second)
+		{
+			if (first.x != second.x || first.y != second.y) return true;
+			return false;
+		}
 		public override string ToString()
 		{
 			return "(" + x + "," + y + ")";

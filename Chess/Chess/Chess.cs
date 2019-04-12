@@ -11,7 +11,7 @@ namespace Chess
 		enum State { choosingPlayer, choosingAct}
 		State currentState = State.choosingPlayer;
 		bool whiteTurn = true;
-		Team[] teams;
+		public readonly Team[] teams;
 		Spot[,] map;
 
 		int choiceIndex = 0;
@@ -62,7 +62,7 @@ namespace Chess
 		{
 			List<Spot> chooseAbles;
 			if (currentState == State.choosingPlayer) chooseAbles = (whiteTurn) ? chooseAbles = teams[0].AvailablePlayers() : chooseAbles = teams[1].AvailablePlayers();
-			else chooseAbles = currentSoldier.AvailableSpots();
+			else chooseAbles = currentSoldier.AvailableSpots(this);
 			bool hasChoice = (chooseAbles.Count == 0) ? false : true;
 			if(hasChoice)
 				markedSpot = (markedSpot == null) ? chooseAbles[0] : markedSpot;
@@ -244,7 +244,7 @@ namespace Chess
 			return bestSpot;
 		}
 
-		class Team
+		public class Team
 		{
 			Soldier[] soldiers = new Soldier[16];
 			Spot[,] map;
@@ -303,66 +303,78 @@ namespace Chess
 									soldiers[x] = new Soldier(Soldier.Role.rook, white, map[x, 0], map);
 									map[x, 0].occupier = soldiers[x];
 									break;
+							}
+						}
+					}
+				}
+
+				else
+				{
+					for (int x = 0; x < 16; x++)
+					{
+						if (x > 7)
+						{
+							soldiers[x] = new Soldier(Soldier.Role.pawn, white, map[x - 8, map.GetLength(1) - 2], map);
+							map[x - 8, map.GetLength(1) - 2].occupier = soldiers[x];
+						}
+						else
+						{
+							switch (x)
+							{
+								case 0:
+									soldiers[x] = new Soldier(Soldier.Role.rook, white, map[x, map.GetLength(1) - 1], map);
+									map[x, map.GetLength(1) - 1].occupier = soldiers[x];
+									break;
+								case 1:
+									soldiers[x] = new Soldier(Soldier.Role.knight, white, map[x, map.GetLength(1) - 1], map);
+									map[x, map.GetLength(1) - 1].occupier = soldiers[x];
+									break;
+								case 2:
+									soldiers[x] = new Soldier(Soldier.Role.bishop, white, map[x, map.GetLength(1) - 1], map);
+									map[x, map.GetLength(1) - 1].occupier = soldiers[x];
+									break;
+								case 3:
+									soldiers[x] = new Soldier(Soldier.Role.queen, white, map[x, map.GetLength(1) - 1], map);
+									map[x, map.GetLength(1) - 1].occupier = soldiers[x];
+									break;
+								case 4:
+									soldiers[x] = new Soldier(Soldier.Role.king, white, map[x, map.GetLength(1) - 1], map);
+									map[x, map.GetLength(1) - 1].occupier = soldiers[x];
+									break;
+								case 5:
+									soldiers[x] = new Soldier(Soldier.Role.bishop, white, map[x, map.GetLength(1) - 1], map);
+									map[x, map.GetLength(1) - 1].occupier = soldiers[x];
+									break;
+								case 6:
+									soldiers[x] = new Soldier(Soldier.Role.knight, white, map[x, map.GetLength(1) - 1], map);
+									map[x, map.GetLength(1) - 1].occupier = soldiers[x];
+									break;
+								case 7:
+									soldiers[x] = new Soldier(Soldier.Role.rook, white, map[x, map.GetLength(1) - 1], map);
+									map[x, map.GetLength(1) - 1].occupier = soldiers[x];
+									break;
 
 							}
 						}
 					}
-					return;
 				}
-				for (int x = 0; x < 16; x++)
-				{
-					if (x > 7)
-					{
-						soldiers[x] = new Soldier(Soldier.Role.pawn, white, map[x - 8, map.GetLength(1) - 2], map);
-						map[x - 8, map.GetLength(1) - 2].occupier = soldiers[x];
-					}
-					else
-					{
-						switch (x)
-						{
-							case 0:
-								soldiers[x] = new Soldier(Soldier.Role.rook, white, map[x, map.GetLength(1) - 1], map);
-								map[x, map.GetLength(1) - 1].occupier = soldiers[x];
-								break;
-							case 1:
-								soldiers[x] = new Soldier(Soldier.Role.knight, white, map[x, map.GetLength(1) - 1], map);
-								map[x, map.GetLength(1) - 1].occupier = soldiers[x];
-								break;
-							case 2:
-								soldiers[x] = new Soldier(Soldier.Role.bishop, white, map[x, map.GetLength(1) - 1], map);
-								map[x, map.GetLength(1) - 1].occupier = soldiers[x];
-								break;
-							case 3:
-								soldiers[x] = new Soldier(Soldier.Role.queen, white, map[x, map.GetLength(1) - 1], map);
-								map[x, map.GetLength(1) - 1].occupier = soldiers[x];
-								break;
-							case 4:
-								soldiers[x] = new Soldier(Soldier.Role.king, white, map[x, map.GetLength(1) - 1], map);
-								map[x, map.GetLength(1) - 1].occupier = soldiers[x];
-								break;
-							case 5:
-								soldiers[x] = new Soldier(Soldier.Role.bishop, white, map[x, map.GetLength(1) - 1], map);
-								map[x, map.GetLength(1) - 1].occupier = soldiers[x];
-								break;
-							case 6:
-								soldiers[x] = new Soldier(Soldier.Role.knight, white, map[x, map.GetLength(1) - 1], map);
-								map[x, map.GetLength(1) - 1].occupier = soldiers[x];
-								break;
-							case 7:
-								soldiers[x] = new Soldier(Soldier.Role.rook, white, map[x, map.GetLength(1) - 1], map);
-								map[x, map.GetLength(1) - 1].occupier = soldiers[x];
-								break;
 
-						}
-					}
 				}
-			}
 			public List<Spot> AvailablePlayers()
 			{
 				List<Spot> list = new List<Spot>();
 				for (int i = 0; i < soldiers.Length; i++)
 				{
 					if (soldiers[i].alive) list.Add(soldiers[i].currentSpot);
+				}
+				return list;
+			}
+			public List<Soldier> SoldiersList()
+			{
+				List<Soldier> list = new List<Soldier>();
+				for (int i = 0; i < soldiers.Length; i++)
+				{
+					if (soldiers[i].alive) list.Add(soldiers[i]);
 				}
 				return list;
 			}
